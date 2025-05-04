@@ -30,11 +30,15 @@ func (s *authService) Register(input dto.RegisterDTO) (*entity.User, error) {
 	if err != nil {
 		return nil, errors.New("failed to hash password")
 	}
-	user := &entity.User{
-		Username: input.Username,
-		Password: string(hash),
-		Role:     "user",
-	}
+	role := input.Role
+if role == "" {
+	role = "user"
+}
+user := &entity.User{
+	Username: input.Username,
+	Password: string(hash),
+	Role:     role,
+}
 	if err := s.repo.CreateUser(user); err != nil {
 		return nil, err
 	}

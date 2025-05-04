@@ -17,6 +17,7 @@ func SetupRouter(
 	// Auth
 	r.POST("/register", authCtrl.Register)
 	r.POST("/login", authCtrl.Login)
+	r.POST("/register-admin", authCtrl.RegisterAdmin)
 
 	// Event
 	event := r.Group("/events")

@@ -6,6 +6,7 @@ type Event struct {
 	ID          uint      `gorm:"primaryKey" json:"id"`
 	Name        string    `gorm:"unique;not null" json:"name"`
 	Description string    `json:"description"`
+	City        string    `gorm:"not null" json:"city"`
 	Capacity    int       `gorm:"not null" json:"capacity"`
 	Price       float64   `gorm:"not null" json:"price"`
 	Status      string    `gorm:"not null" json:"status"` // Aktif, Berlangsung, Selesai

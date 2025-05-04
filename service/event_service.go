@@ -10,7 +10,7 @@ import (
 
 type EventService interface {
 	CreateEvent(dto.EventCreateDTO) (*entity.Event, error)
-	GetAllEvents(keyword, status string, page, limit int) ([]entity.Event, int, int64, error)
+	GetAllEvents(keyword, status, city, startDate, endDate string, page, limit int) ([]entity.Event, int, int64, error)
 	GetEventByID(id uint) (*entity.Event, error)
 	UpdateEvent(id uint, dto dto.EventUpdateDTO, currentTime time.Time) (*entity.Event, error)
 	DeleteEvent(id uint) error
@@ -55,14 +55,14 @@ func (s *eventService) CreateEvent(input dto.EventCreateDTO) (*entity.Event, err
 	return event, nil
 }
 
-func (s *eventService) GetAllEvents(keyword, status string, page, limit int) ([]entity.Event, int, int64, error) {
+func (s *eventService) GetAllEvents(keyword, status, city, startDate, endDate string, page, limit int) ([]entity.Event, int, int64, error) {
 	if page < 1 {
 		page = 1
 	}
 	if limit < 1 {
 		limit = 10
 	}
-	events, total, err := s.repo.GetAllEvents(keyword, status, page, limit)
+	events, total, err := s.repo.GetAllEvents(keyword, status, city, startDate, endDate, page, limit)
 	totalPages := int((total + int64(limit) - 1) / int64(limit))
 	return events, totalPages, total, err
 }
@@ -86,10 +86,13 @@ func (s *eventService) UpdateEvent(id uint, input dto.EventUpdateDTO, currentTim
 		}
 		event.Name = input.Name
 	}
-	if input.Capacity >= 0 {
+	if input.City != "" {
+		event.City = input.City
+	}
+	if input.Capacity != 0 {
 		event.Capacity = input.Capacity
 	}
-	if input.Price >= 0 {
+	if input.Price != 0 {
 		event.Price = input.Price
 	}
 	if input.Status != "" {
@@ -101,7 +104,9 @@ func (s *eventService) UpdateEvent(id uint, input dto.EventUpdateDTO, currentTim
 	if !input.EndDate.IsZero() {
 		event.EndDate = input.EndDate
 	}
-	event.Description = input.Description
+	if input.Description != "" {
+		event.Description = input.Description
+	}
 	event.UpdatedAt = currentTime
 	if err := s.repo.UpdateEvent(event); err != nil {
 		return nil, err

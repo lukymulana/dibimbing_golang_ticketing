@@ -34,9 +34,12 @@ func (c *EventController) CreateEvent(ctx *gin.Context) {
 func (c *EventController) GetEvents(ctx *gin.Context) {
 	keyword := ctx.Query("keyword")
 	status := ctx.Query("status")
+	city := ctx.Query("city")
+	startDate := ctx.Query("start_date") // format: YYYY-MM-DD
+	endDate := ctx.Query("end_date")     // format: YYYY-MM-DD
 	page, _ := strconv.Atoi(ctx.DefaultQuery("page", "1"))
 	limit, _ := strconv.Atoi(ctx.DefaultQuery("limit", "10"))
-	events, totalPages, totalItems, err := c.service.GetAllEvents(keyword, status, page, limit)
+	events, totalPages, totalItems, err := c.service.GetAllEvents(keyword, status, city, startDate, endDate, page, limit)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

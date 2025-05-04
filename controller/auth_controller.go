@@ -48,3 +48,23 @@ func (c *AuthController) Login(ctx *gin.Context) {
 	}
 	ctx.JSON(http.StatusOK, gin.H{"token": token})
 }
+
+// RegisterAdmin hanya untuk admin, role otomatis 'admin'
+func (c *AuthController) RegisterAdmin(ctx *gin.Context) {
+	var input dto.AdminRegisterDTO
+	if err := ctx.ShouldBindJSON(&input); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	user, err := c.service.Register(dto.RegisterDTO{
+		Username: input.Username,
+		Password: input.Password,
+		Role:     "admin",
+	})
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	
+	ctx.JSON(http.StatusCreated, gin.H{"user": user})
+}

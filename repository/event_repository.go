@@ -7,7 +7,7 @@ import (
 
 type EventRepository interface {
 	CreateEvent(event *entity.Event) error
-	GetAllEvents(keyword string, status string, page, limit int) ([]entity.Event, int64, error)
+	GetAllEvents(keyword, status, city, startDate, endDate string, page, limit int) ([]entity.Event, int64, error)
 	GetEventByID(id uint) (*entity.Event, error)
 	UpdateEvent(event *entity.Event) error
 	DeleteEvent(id uint) error
@@ -26,7 +26,7 @@ func (r *eventRepository) CreateEvent(event *entity.Event) error {
 	return r.db.Create(event).Error
 }
 
-func (r *eventRepository) GetAllEvents(keyword string, status string, page, limit int) ([]entity.Event, int64, error) {
+func (r *eventRepository) GetAllEvents(keyword, status, city string, startDate, endDate string, page, limit int) ([]entity.Event, int64, error) {
 	var events []entity.Event
 	var count int64
 	q := r.db.Model(&entity.Event{})
@@ -35,6 +35,16 @@ func (r *eventRepository) GetAllEvents(keyword string, status string, page, limi
 	}
 	if status != "" {
 		q = q.Where("status = ?", status)
+	}
+	if city != "" {
+		q = q.Where("city = ?", city)
+	}
+	if startDate != "" && endDate != "" {
+		q = q.Where("start_date >= ? AND end_date <= ?", startDate, endDate)
+	} else if startDate != "" {
+		q = q.Where("start_date >= ?", startDate)
+	} else if endDate != "" {
+		q = q.Where("end_date <= ?", endDate)
 	}
 	q.Count(&count)
 	offset := (page - 1) * limit

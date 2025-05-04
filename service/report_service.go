@@ -23,7 +23,7 @@ func (s *reportService) GetSummaryReport() (*dto.ReportSummaryDTO, error) {
 	// Hitung total tiket terjual dan total pendapatan
 	var totalTickets int64
 	var totalRevenue float64
-	events, _, err := s.eventRepo.GetAllEvents("", "", 1, 10000)
+	events, _, err := s.eventRepo.GetAllEvents("", "", "", "", "", 1, 10000)
 	if err != nil {
 		return nil, err
 	}
